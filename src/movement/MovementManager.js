@@ -46,10 +46,12 @@ class MovementManager {
       );
 
       // Set the goal and wait for completion
-      await this.bot.pathfinder.setGoal(goal, true);
+      await this.bot.pathfinder.goto(goal);
       this.stuckCount = 0;
 
     } catch (err) {
+      // Explicit cancellation is not a pathfinding failure.
+      if (err.name === 'GoalChanged' || err.name === 'PathStopped') return;
       this.stuckCount++;
       console.log(`[Movement] Pathfinding hiccup (${this.stuckCount}): ${err.message}`);
 
@@ -60,9 +62,9 @@ class MovementManager {
       } else {
         await this.h.delay(2000, 5000);
       }
+    } finally {
+      this.isMoving = false;
     }
-
-    this.isMoving = false;
   }
 
   /**
