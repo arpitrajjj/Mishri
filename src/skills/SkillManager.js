@@ -123,9 +123,11 @@ class SkillManager {
    */
   async craftBasic() {
     try {
-      // Find something we can craft
-      const recipes = this.bot.recipesAll();
-      const craftable = recipes.filter(r => r.result && this.bot.inventory.countInventoryItem);
+      // Recipe queries require a result item ID. Only include recipes whose
+      // ingredients are available in the inventory and that need no table.
+      const craftable = this.bot.registry.itemsArray.flatMap(item =>
+        this.bot.recipesFor(item.id, null, 1, null)
+      );
 
       if (craftable.length === 0) {
         console.log('[Skill] Nothing to craft');
