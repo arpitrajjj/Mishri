@@ -26,6 +26,10 @@ const SkillManager = require(path.resolve(_thisDir, '..', 'skills', 'SkillManage
 class MishriBot {
   constructor(overrides = {}) {
     this.config = { ...config, ...overrides };
+    // Keep defaults within each section when callers override only some fields.
+    for (const section of Object.keys(config)) {
+      this.config[section] = { ...config[section], ...this.config[section] };
+    }
     this.bot = null;
     this.running = false;
     this.startTime = null;
